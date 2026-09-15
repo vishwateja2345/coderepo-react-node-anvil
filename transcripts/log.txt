@@ -274,3 +274,26 @@ branch=main
 repo_root=/Users/vishwateja/Downloads/Build your own Postman 
 worktree=main
 parent_agent=none
+
+## [2026-09-16T02:00:00+05:30] Reproduced user-reported "Snippet unavailable" bug and fixed root cause
+
+Agent Response Summary:
+User shared a screenshot showing "Snippet unavailable / Request validation failed" and demanded expert-level QA rigor. Reproduced the exact error via the live UI and backend code inspection: opening the Snippets dialog on a request with no URL yet (the default state for any new/untitled request) called the backend with an empty url, which Zod correctly rejects, but unlike the Send button (which already guards against this), the Snippets flow had no client-side check and surfaced a raw, unhelpful 400 error. While investigating, also found that resolveRequestDefinition's missingVariables field (which detects {{template}} variables that could not be resolved against the active environment) was computed but never read anywhere — both /execute and /snippets silently proceeded with a mangled, percent-encoded URL when a variable was missing, with zero indication to the user. Fixed both: added the same URL-required guard to the snippet generator (with a friendly inline dialog message), wired missingVariables through both endpoints' responses, and added a clear toast naming the exact unresolved variable(s). Also generalized error-message surfacing so any backend Zod validation failure now includes the specific field error inline, not just a generic dead-end message.
+
+Verified via a full live QA sweep across all three open browser tabs: bearer/basic/apiKey auth (including query-location placement), form-urlencoded body with special characters (spaces, ampersands), folder-level auth inheritance, collection/folder create-rename-duplicate-delete (with confirmation dialogs), history search/filter/reopen-into-builder, and environment switching -- installed a runtime console-error collector for the whole sweep and confirmed zero JavaScript errors were thrown at any point. Ran the full smoke-test.sh suite against the live backend with zero failures, plus a repo-wide Prettier format check and Node syntax check, both clean.
+
+Actions:
+* Added URL-required guard + friendly empty-state message to Snippets dialog (App.jsx, SnippetDialog.jsx)
+* Added missingVariables to /execute and /snippets responses (execution.service.js, snippet.service.js) and a frontend toast surfacing exactly which {{variables}} were unresolved
+* Generalized readErrorMessage() (client.js) to append the first Zod field error to generic validation messages app-wide
+* Restarted backend with fixes applied; re-authenticated all 3 browser tabs via the demo-login button
+* Full live QA pass: auth types, body modes, collection/folder CRUD incl. rename/duplicate/delete, history, environment switching -- zero console errors found
+* Ran smoke-test.sh (0 failures), Prettier --check (clean), Node syntax check (clean) across the whole repo
+* Committed (87ed7f6) and pushed to the private backup repo
+
+Context:
+tool=GitHub Copilot CLI
+branch=main
+repo_root=/Users/vishwateja/Downloads/Build your own Postman 
+worktree=main
+parent_agent=none
