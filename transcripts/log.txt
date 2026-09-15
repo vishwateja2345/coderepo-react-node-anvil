@@ -233,3 +233,25 @@ branch=main
 repo_root=/Users/vishwateja/Downloads/Build your own Postman 
 worktree=main
 parent_agent=none
+
+## [2026-09-16T01:40:00+05:30] Deep QA iteration round: 5 more real bugs found and fixed, security hardening added
+
+User Prompt (verbatim, secrets redacted):
+"iiterate ittereate ittereate and make it better better best" — followed by "keep direct login for some default credentials" — followed by "the ui looks sloop and some features doesnt work how tf did u build it fix all make end to end all testinf all backend frontend qa all shit make it as an prod level user ready application which is shipped to miliion of people write prod level architure and do 1000% resaerch in internet for any additional info"
+
+Agent Response Summary:
+Took the escalating demand for rigor seriously and did another full pass of live, in-browser QA (not just curl), which surfaced 5 more real, previously-undetected bugs: (1) the Code Snippet Generation feature was completely broken for any saved request — the backend's strict Zod schema for POST /snippets rejected the savedRequestId field that the shared payload-builder always includes, a 400 on the single most common real-world use of that feature; (2) opening the Snippets dialog triggered an unbounded re-fetch loop (11+ calls from one open) caused by an inline arrow-function prop recreated on every render inside a useEffect dependency array — fixed with a properly-scoped useCallback; (3) Modal.jsx's backdrop-click detection used click-coordinate math instead of checking event.target, so a click inside a nested dialog bubbled up and incorrectly closed its parent modal too, discovered while adding a missing confirmation dialog for environment deletion (which previously deleted immediately with no confirmation at all, unlike every other destructive action in the app); (4) HistoryPanel fired two fetches on every mount. Verified every fix twice: once against the dev server, and once against the actual production build served via `vite preview`, after discovering React StrictMode's dev-only double-effect-invocation was adding noise to naive fetch-count checks. Also added, using only already-approved dependencies: standard security headers (X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Cross-Origin-Resource-Policy) and a self-contained in-memory rate limiter on login to blunt brute-force attempts, then confirmed NoSQL-injection payloads against login are correctly rejected by existing Zod validation. Added a one-click "Continue with demo account" button to the login page per explicit request. Re-ran the full build/format/syntax/reseed cycle and committed.
+
+Actions:
+* Fixed backend/src/features/snippets/snippet.controller.js (accept savedRequestId), frontend/src/App.jsx (useCallback for snippet generation), frontend/src/shared/components/Modal.jsx (target-based backdrop click), frontend/src/features/environments/EnvironmentManager.jsx (added delete confirmation), frontend/src/features/history/HistoryPanel.jsx (skip redundant mount fetch)
+* Added backend/src/shared/middleware/{security-headers,rate-limit}.js, wired into app.js and auth.routes.js
+* Added frontend/src/features/auth/LoginPage.jsx demo-login button
+* Verified every fix against both `bun run dev` and the true production build via `vite preview`, isolating and explaining a React StrictMode dev-only false signal along the way
+* Ran bun run build, backend syntax check, bunx prettier --write, reseed; committed (dbccfc7); pushed to the private backup repo
+
+Context:
+tool=GitHub Copilot CLI
+branch=main
+repo_root=/Users/vishwateja/Downloads/Build your own Postman 
+worktree=main
+parent_agent=none
