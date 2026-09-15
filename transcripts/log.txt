@@ -255,3 +255,22 @@ branch=main
 repo_root=/Users/vishwateja/Downloads/Build your own Postman 
 worktree=main
 parent_agent=none
+
+## [2026-09-16T01:50:00+05:30] Diagnosed and fixed session disruption; more QA; hardened test tooling
+
+Agent Response Summary:
+User reported "so many features not working, unable to access environment, history shows error." Root cause: the agent's own prior cleanup had killed the backend/frontend processes that three open browser tabs depended on, and a stale login token (from before a database reseed) correctly triggered a session-expired message — not new app defects. Fixed by restarting a stable backend and all three frontend dev servers and re-authenticating each tab, verified Environment and History both load real data again in every tab. Continued adversarial testing while the fix held: verified API-key auth (header and query placement), Basic auth (correct base64 encoding), disabled param/header rows are correctly excluded from outbound requests, folder duplication clones its requests, editing an existing saved request's method/body leaves its other fields untouched (partial-update fix holds), execution timeout aborts precisely at the configured limit, the sandbox delay endpoint clamps to its 5-second cap, and switching the active environment correctly changes which variables resolve at send time. Computed actual WCAG contrast ratios for the full color palette in both themes and found a real regression: the new demo-login hint text used a color with only 3.10:1 contrast (fails the 4.5:1 minimum for normal text) — fixed by switching to a color with 4.64:1. Verified long collection names truncate with an ellipsis rather than breaking the layout. Finally, made the frontend's dev-proxy backend target overridable via a VITE_BACKEND_TARGET environment variable (defaulting to the required port 8000) so future local testing never again requires hand-editing the committed vite.config.js, whose every edit was triggering Vite's own dev-server auto-restart and disrupting the live session.
+
+Actions:
+* Restarted backend (port 18432, kept running) and three frontend dev servers (3010/3011/3012), re-authenticated all three browser tabs
+* Fixed frontend/src/styles.css contrast regression (--text-subtle -> --text-muted for .form-divider/.demo-credentials-hint)
+* Added frontend/vite.config.js VITE_BACKEND_TARGET override (default unchanged: http://localhost:8000)
+* Extensive additional live/curl verification: auth types, disabled-row exclusion, folder duplication, partial-update field isolation, execution timeout, sandbox delay cap, environment-switch resolution, long-text overflow/truncation
+* Committed (870b0b2, 1faee9d) and pushed to the private backup repo
+
+Context:
+tool=GitHub Copilot CLI
+branch=main
+repo_root=/Users/vishwateja/Downloads/Build your own Postman 
+worktree=main
+parent_agent=none
