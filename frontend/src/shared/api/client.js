@@ -19,7 +19,16 @@ function dispatchSessionExpired(message) {
 }
 
 export function readErrorMessage(payload, fallback = "Something went wrong.") {
-	return payload?.error?.message || fallback;
+	const base = payload?.error?.message || fallback;
+	const fieldErrors = payload?.error?.details?.fieldErrors;
+	if (fieldErrors && typeof fieldErrors === "object") {
+		const firstIssue = Object.entries(fieldErrors).find(([, messages]) => Array.isArray(messages) && messages.length > 0);
+		if (firstIssue) {
+			const [field, messages] = firstIssue;
+			return `${base} (${field}: ${messages[0]})`;
+		}
+	}
+	return base;
 }
 
 export function getSessionToken() {

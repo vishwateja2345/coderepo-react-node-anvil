@@ -249,7 +249,12 @@ function WorkspaceShell({ user }) {
 			const response = await builderApi.execute(normalizeExecutionPayload(draftOverride, activeEnvironment?._id));
 			setResponseState({ elapsedMs: Date.now() - startedAt, loading: false, response, startedAt: 0, tab: "body" });
 			setHistoryRefreshKey((value) => value + 1);
-			if (response.ok) {
+			if (response.missingVariables?.length) {
+				toast.info(
+					"Unresolved variables",
+					`${response.missingVariables.map((name) => `{{${name}}}`).join(", ")} not found in the active environment.`,
+				);
+			} else if (response.ok) {
 				toast.success("Request complete", `${draftOverride.method} returned ${response.status} ${response.statusText}`);
 			} else {
 				toast.error("Network failure", response.error?.message || "The request did not receive a response.");
@@ -262,6 +267,11 @@ function WorkspaceShell({ user }) {
 
 	const handleLanguageChange = useCallback(
 		async (language) => {
+			if (!activeRequest.draft.url.trim()) {
+				setSnippetText("");
+				toast.error("Request URL required", "Enter a URL before generating a snippet.");
+				return;
+			}
 			setSnippetLoading(true);
 			try {
 				const result = await builderApi.snippet({
@@ -269,6 +279,12 @@ function WorkspaceShell({ user }) {
 					language,
 				});
 				setSnippetText(result.snippet);
+				if (result.missingVariables?.length) {
+					toast.info(
+						"Unresolved variables",
+						`${result.missingVariables.map((name) => `{{${name}}}`).join(", ")} not found in the active environment.`,
+					);
+				}
 			} catch (requestError) {
 				setSnippetText("");
 				toast.error("Snippet unavailable", requestError.message || "Unable to generate snippet.");

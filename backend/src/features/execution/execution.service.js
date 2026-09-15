@@ -65,6 +65,7 @@ export const executionService = {
 				timeMs: result.timeMs,
 				resolvedUrl: result.resolvedUrl || resolved.resolvedUrl,
 				historyId: historyEntry ? String(historyEntry._id) : null,
+				missingVariables: resolved.missingVariables,
 			};
 		} catch (error) {
 			if (!(error instanceof AppError) || !["EXECUTION_TIMEOUT", "EXECUTION_FAILED"].includes(error.code)) {
@@ -99,6 +100,7 @@ export const executionService = {
 				sizeBytes: 0,
 				historyId: historyEntry ? String(historyEntry._id) : null,
 				error: { message: error.message },
+				missingVariables: resolved.missingVariables,
 			};
 		}
 	},

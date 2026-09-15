@@ -34,8 +34,12 @@ export function SnippetDialog({ loading, onClose, onCopy, onLanguageChange, open
 						<div className="loading-panel" role="status">
 							Generating snippet…
 						</div>
+					) : snippet ? (
+						<pre>{snippet}</pre>
 					) : (
-						<pre>{snippet || ""}</pre>
+						<div className="loading-panel" role="status">
+							Enter a request URL, then reopen this dialog to generate a snippet.
+						</div>
 					)}
 				</div>
 				<div className="modal-actions">

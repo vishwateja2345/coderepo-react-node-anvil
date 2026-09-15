@@ -8,6 +8,6 @@ export const snippetService = {
 			: await environmentService.findActiveForOwner(account._id);
 		const variables = environmentToVariables(environment);
 		const resolved = resolveRequestDefinition(input, variables);
-		return { snippet: generateSnippet(input.language, resolved) };
+		return { snippet: generateSnippet(input.language, resolved), missingVariables: resolved.missingVariables };
 	},
 };
