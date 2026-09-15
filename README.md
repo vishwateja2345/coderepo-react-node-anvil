@@ -96,4 +96,5 @@ Email: jordan@anvil.dev
 Password: password123
 ```
 
-This account has 3 environments ("Local Sandbox" active, "Staging", "Production"), 2 collections ("Anvil Sandbox" — works fully offline against the app's own backend — and "Public API Examples", which needs internet access), and a history of prior sends. A second seeded account (`sam@anvil.dev` / `password123`) demonstrates that collections, environments, and history are private per account.
+This account has 2 environments ("Local Sandbox" active with a seeded bearer token, "Preview" inactive), 1 collection ("Sandbox demos" — a folder of authenticated requests plus root-level status/delay demos, all runnable fully offline against the app's own backend), and 4 history entries (a mix of successful sends and one simulated network failure). A second seeded account (`sam@anvil.dev` / `password123`) has its own isolated environment ("Personal") and collection ("Sam's Requests") with zero shared data, demonstrating that collections, environments, and history are private per account.
+
