@@ -27,6 +27,7 @@ const snippetSchema = z
 		}),
 		collectionAuth: collectionAuthZodSchema.optional(),
 		environmentId: z.string().regex(OBJECT_ID_PATTERN).optional(),
+		savedRequestId: z.string().regex(OBJECT_ID_PATTERN).nullable().optional(),
 		language: z.enum(["curl", "javascript-fetch", "python-requests"]),
 	})
 	.strict();

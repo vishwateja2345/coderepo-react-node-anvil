@@ -167,6 +167,33 @@ mark { padding: 0 2px; border-radius: 4px; background: rgb(212 139 31 / 28%); co
 .login-hero { display: grid; align-content: center; gap: 24px; }
 .login-card-section { display: grid; place-items: center; }
 .login-card { display: grid; gap: 16px; width: 100%; }
+.form-divider {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	color: var(--text-subtle);
+	font-size: 12px;
+	text-transform: uppercase;
+	letter-spacing: .08em;
+}
+.form-divider::before,
+.form-divider::after {
+	flex: 1 1 auto;
+	height: 1px;
+	background: var(--border);
+	content: "";
+}
+.demo-credentials-hint {
+	margin: 0;
+	color: var(--text-subtle);
+	font-size: 12px;
+	text-align: center;
+}
+.demo-credentials-hint code {
+	padding: 1px 5px;
+	border-radius: 4px;
+	background: var(--surface-soft);
+}
 .eyebrow {
 	margin: 0 0 6px;
 	color: var(--text-muted);

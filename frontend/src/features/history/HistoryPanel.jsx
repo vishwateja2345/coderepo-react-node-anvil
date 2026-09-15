@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { historyApi } from "./history.api.js";
 import { EmptyState } from "../../shared/components/EmptyState.jsx";
 import { MaterialIcon } from "../../shared/components/MaterialIcon.jsx";
@@ -16,6 +16,7 @@ export function HistoryPanel({ collections, onOpenEntry, onRefreshCollections, o
 	const [confirmClear, setConfirmClear] = useState(false);
 	const [saveTarget, setSaveTarget] = useState(null);
 	const [saveValues, setSaveValues] = useState({ collectionId: "", folderId: "", name: "" });
+	const isFirstFilterRender = useRef(true);
 
 	const loadHistory = async () => {
 		try {
@@ -36,6 +37,10 @@ export function HistoryPanel({ collections, onOpenEntry, onRefreshCollections, o
 	}, [refreshKey]);
 
 	useEffect(() => {
+		if (isFirstFilterRender.current) {
+			isFirstFilterRender.current = false;
+			return undefined;
+		}
 		const handle = window.setTimeout(() => {
 			loadHistory();
 		}, 240);

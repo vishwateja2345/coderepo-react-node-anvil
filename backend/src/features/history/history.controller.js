@@ -53,11 +53,9 @@ export async function clearHistory(request, response, next) {
 
 export async function saveHistoryEntry(request, response, next) {
 	try {
-		response
-			.status(201)
-			.json({
-				data: await historyService.saveToCollection(request.params.historyId, request.account._id, saveSchema.parse(request.body)),
-			});
+		response.status(201).json({
+			data: await historyService.saveToCollection(request.params.historyId, request.account._id, saveSchema.parse(request.body)),
+		});
 	} catch (error) {
 		next(error);
 	}

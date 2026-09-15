@@ -38,15 +38,7 @@ export function Modal({ children, className = "", description, onClose, open, ti
 	}, [onClose]);
 
 	const handleBackdropClick = (event) => {
-		const dialog = dialogRef.current;
-		if (!dialog) {
-			return;
-		}
-
-		const rect = dialog.getBoundingClientRect();
-		const clickedBackdrop =
-			event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom;
-		if (clickedBackdrop) {
+		if (event.target === dialogRef.current) {
 			onClose?.();
 		}
 	};

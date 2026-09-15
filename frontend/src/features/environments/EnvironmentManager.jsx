@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { ConfirmationDialog } from "../../shared/components/ConfirmationDialog.jsx";
 import { Modal } from "../../shared/components/Modal.jsx";
 import { MaterialIcon } from "../../shared/components/MaterialIcon.jsx";
 import { createKeyValueRow, normalizeKeyValueList, sanitizeKeyValueList } from "../../shared/utils/request.js";
@@ -19,6 +20,7 @@ export function EnvironmentManager({ environments, onActivate, onClose, onCreate
 	const [draft, setDraft] = useState(null);
 	const [newEnvironmentName, setNewEnvironmentName] = useState("");
 	const [error, setError] = useState("");
+	const [confirmDelete, setConfirmDelete] = useState(null);
 
 	useEffect(() => {
 		if (!open) {
@@ -132,7 +134,11 @@ export function EnvironmentManager({ environments, onActivate, onClose, onCreate
 									<button className="button button-secondary" onClick={() => onActivate(draft._id)} type="button">
 										Set active
 									</button>
-									<button className="button button-danger" onClick={() => onDelete(selectedEnvironment)} type="button">
+									<button
+										className="button button-danger"
+										onClick={() => setConfirmDelete(selectedEnvironment)}
+										type="button"
+									>
 										Delete
 									</button>
 								</div>
@@ -252,6 +258,19 @@ export function EnvironmentManager({ environments, onActivate, onClose, onCreate
 					)}
 				</div>
 			</div>
+			<ConfirmationDialog
+				confirmLabel="Delete environment"
+				danger
+				description={`This permanently deletes "${confirmDelete?.name || ""}" and its variables. This cannot be undone.`}
+				onClose={() => setConfirmDelete(null)}
+				onConfirm={async () => {
+					const target = confirmDelete;
+					setConfirmDelete(null);
+					await onDelete(target);
+				}}
+				open={Boolean(confirmDelete)}
+				title="Delete environment?"
+			/>
 		</Modal>
 	);
 }

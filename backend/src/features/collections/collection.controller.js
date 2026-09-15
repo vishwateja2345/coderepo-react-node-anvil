@@ -90,15 +90,13 @@ export async function reorderCollections(request, response, next) {
 
 export async function createFolder(request, response, next) {
 	try {
-		response
-			.status(201)
-			.json({
-				data: await collectionService.createFolder(
-					request.params.collectionId,
-					folderCreateSchema.parse(request.body),
-					request.account._id,
-				),
-			});
+		response.status(201).json({
+			data: await collectionService.createFolder(
+				request.params.collectionId,
+				folderCreateSchema.parse(request.body),
+				request.account._id,
+			),
+		});
 	} catch (error) {
 		next(error);
 	}
@@ -143,15 +141,13 @@ export async function reorderFolders(request, response, next) {
 
 export async function createRequest(request, response, next) {
 	try {
-		response
-			.status(201)
-			.json({
-				data: await collectionService.createRequest(
-					request.params.collectionId,
-					savedRequestCreateZodSchema.parse(request.body),
-					request.account._id,
-				),
-			});
+		response.status(201).json({
+			data: await collectionService.createRequest(
+				request.params.collectionId,
+				savedRequestCreateZodSchema.parse(request.body),
+				request.account._id,
+			),
+		});
 	} catch (error) {
 		next(error);
 	}

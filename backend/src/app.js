@@ -12,12 +12,14 @@ import { sandboxRouter } from "./features/sandbox/sandbox.routes.js";
 import { snippetRouter } from "./features/snippets/snippet.routes.js";
 import { requireWorkspaceAuth } from "./shared/middleware/auth.js";
 import { errorHandler, notFoundHandler } from "./shared/middleware/error-handler.js";
+import { securityHeaders } from "./shared/middleware/security-headers.js";
 
 const publicDirectory = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../public");
 
 export function createApp() {
 	const app = express();
 	app.disable("x-powered-by");
+	app.use(securityHeaders);
 	app.use(cors());
 	app.use(express.json({ limit: "250kb" }));
 	app.use(express.urlencoded({ extended: true, limit: "250kb" }));

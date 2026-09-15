@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { LoginPage } from "./features/auth/LoginPage.jsx";
 import { RequestBuilder } from "./features/builder/RequestBuilder.jsx";
 import { builderApi } from "./features/builder/builder.api.js";
@@ -259,6 +259,26 @@ function WorkspaceShell({ user }) {
 			toast.error("Request failed", requestError.message || "Unable to execute request.");
 		}
 	};
+
+	const handleLanguageChange = useCallback(
+		async (language) => {
+			setSnippetLoading(true);
+			try {
+				const result = await builderApi.snippet({
+					...normalizeExecutionPayload(activeRequest.draft, activeEnvironment?._id),
+					language,
+				});
+				setSnippetText(result.snippet);
+			} catch (requestError) {
+				setSnippetText("");
+				toast.error("Snippet unavailable", requestError.message || "Unable to generate snippet.");
+			} finally {
+				setSnippetLoading(false);
+			}
+		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps -- `toast` is stable from context; excluding it (and setState setters) keeps this from re-creating on unrelated renders.
+		[activeRequest.draft, activeEnvironment],
+	);
 
 	const handleSaveCurrent = async () => {
 		if (!collections.length && !activeRequest.draft.savedRequestId) {
@@ -690,21 +710,7 @@ function WorkspaceShell({ user }) {
 						toast.error("Copy failed", "Clipboard access was not available.");
 					}
 				}}
-				onLanguageChange={async (language) => {
-					setSnippetLoading(true);
-					try {
-						const result = await builderApi.snippet({
-							...normalizeExecutionPayload(activeRequest.draft, activeEnvironment?._id),
-							language,
-						});
-						setSnippetText(result.snippet);
-					} catch (requestError) {
-						setSnippetText("");
-						toast.error("Snippet unavailable", requestError.message || "Unable to generate snippet.");
-					} finally {
-						setSnippetLoading(false);
-					}
-				}}
+				onLanguageChange={handleLanguageChange}
 				open={snippetOpen}
 				snippet={snippetText}
 			/>

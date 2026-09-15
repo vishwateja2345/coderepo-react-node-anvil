@@ -19,6 +19,7 @@ function validate(values) {
 export function LoginPage({ authError, loading, onSubmit }) {
 	const [values, setValues] = useState({ email: "", password: "" });
 	const [touched, setTouched] = useState({});
+	const [demoPending, setDemoPending] = useState(false);
 	const errors = useMemo(() => validate(values), [values]);
 
 	const handleSubmit = async (event) => {
@@ -32,6 +33,17 @@ export function LoginPage({ authError, loading, onSubmit }) {
 			await onSubmit(values);
 		} catch {
 			// Error state is surfaced by the auth context.
+		}
+	};
+
+	const handleDemoLogin = async () => {
+		setDemoPending(true);
+		try {
+			await onSubmit({ email: "jordan@anvil.dev", password: "password123" });
+		} catch {
+			// Error state is surfaced by the auth context.
+		} finally {
+			setDemoPending(false);
 		}
 	};
 
@@ -111,8 +123,17 @@ export function LoginPage({ authError, loading, onSubmit }) {
 						{touched.password && errors.password ? <small className="field-error">{errors.password}</small> : null}
 					</label>
 					<button className="button button-primary button-block" disabled={loading} type="submit">
-						{loading ? "Signing in..." : "Sign in"}
+						{loading && !demoPending ? "Signing in..." : "Sign in"}
 					</button>
+					<div className="form-divider" role="separator">
+						<span>or</span>
+					</div>
+					<button className="button button-secondary button-block" disabled={loading} onClick={handleDemoLogin} type="button">
+						{demoPending ? "Signing in..." : "Continue with demo account"}
+					</button>
+					<p className="demo-credentials-hint">
+						Uses the seeded account <code>jordan@anvil.dev</code> — no password to remember.
+					</p>
 				</form>
 			</section>
 		</main>
