@@ -131,6 +131,7 @@ function WorkspaceShell({ user }) {
 	const [collections, setCollections] = useState([]);
 	const [collectionsLoading, setCollectionsLoading] = useState(true);
 	const [environments, setEnvironments] = useState([]);
+	const [environmentsLoading, setEnvironmentsLoading] = useState(true);
 	const [environmentManagerOpen, setEnvironmentManagerOpen] = useState(false);
 	const [environmentSaving, setEnvironmentSaving] = useState(false);
 	const [activeRequest, setActiveRequest] = useState(() => createActiveDraft());
@@ -173,9 +174,12 @@ function WorkspaceShell({ user }) {
 
 	const refreshEnvironments = async () => {
 		try {
+			setEnvironmentsLoading(true);
 			setEnvironments(await environmentApi.list());
 		} catch (requestError) {
 			toast.error("Environments unavailable", requestError.message || "Unable to load environments.");
+		} finally {
+			setEnvironmentsLoading(false);
 		}
 	};
 
@@ -427,6 +431,7 @@ function WorkspaceShell({ user }) {
 				<EnvironmentSelector
 					activeEnvironment={activeEnvironment}
 					environments={environments}
+					loading={environmentsLoading}
 					onActivate={async (environmentId) => {
 						await environmentApi.activate(environmentId);
 						toast.success("Environment activated");
