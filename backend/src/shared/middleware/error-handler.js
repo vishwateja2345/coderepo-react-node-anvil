@@ -31,6 +31,15 @@ export function errorHandler(error, request, response, next) {
 		});
 	}
 
+	if (error.type === "entity.parse.failed" || (error instanceof SyntaxError && error.status === 400)) {
+		return response.status(400).json({
+			error: {
+				code: "MALFORMED_JSON",
+				message: "The request body is not valid JSON.",
+			},
+		});
+	}
+
 	console.error(error);
 	return response.status(500).json({
 		error: {
