@@ -297,3 +297,31 @@ branch=main
 repo_root=/Users/vishwateja/Downloads/Build your own Postman 
 worktree=main
 parent_agent=none
+
+## [2026-09-16T07:30:00+05:30] Rubric-driven audit: functionality, UI/UX, code architecture, testing, production readiness
+
+Agent Response Summary:
+User pasted the HackerRank Earn FAQ (which lists the formal evaluation criteria: functionality, UI/UX, code architecture and quality, testing, and production readiness) and asked to focus on UI/UX and code functionality. Treated this as a structured audit against GUIDELINES.md's "Product quality" checklist (5.1 frontend, 5.2 backend, 5.3 code quality) rather than guessing at cosmetic changes.
+
+Backend authorization (5.2): directly attacked cross-user access as a second seeded account (Sam) against the primary account's (Jordan's) real resource IDs -- environments, collections, folders, saved requests (GET/PATCH/DELETE/duplicate), and history entries. Every attempt correctly returned a scoped 404 with zero data leakage or mutation; verified Jordan's data was untouched afterward. Also confirmed unauthenticated and tampered-token requests are correctly rejected with 401.
+
+Frontend quality (5.1): verified zero horizontal overflow at a simulated 375px mobile viewport (via a same-origin iframe, since the canvas cannot resize the real browser window) across the login page, the full authenticated workbench, history with real long URLs, and an expanded JSON response tree -- including under an artificially very long unbroken string. Confirmed keyboard accessibility: a global `:focus-visible` outline exists with no `outline: none` overrides anywhere, no manual tabIndex hacks that could break natural tab order, and the Ctrl/Cmd+Enter send shortcut and Ctrl/Cmd+S save shortcut both verified working live via real dispatched KeyboardEvents. Found one real, if minor, gap: the environment selector had no loading state (unlike Collections/History) and would flash "No environments" during the initial fetch -- fixed by adding `environmentsLoading` state end to end. Independently verified drag-and-drop collection/request reordering is genuinely functional end to end (a claimed README feature) by simulating real HTML5 drag events with a spec-correct DataTransfer and confirming the backend persisted the new order -- an initial simulation attempt appeared to fail but that was a synthetic-event timing artifact (events fired faster than React could re-render between them), not an app bug.
+
+Code quality (5.3): wrote a small script to heuristically flag unused imports across all 79 backend/frontend source files -- zero found. Grepped for common British spellings across code, UI text, and docs -- zero found. Re-verified the README's claims (feature list, seed data counts, ports, commands) against the actual current `seed.js` and `hackerrank.yml` -- fully accurate, including the exact 4 history entries and their descriptions.
+
+Actions:
+* Added `environmentsLoading` state (App.jsx, EnvironmentSelector.jsx) with a "Loading environments..." placeholder and disabled selector while fetching
+* Verified backend authorization is airtight across every resource type via direct cross-user attack attempts
+* Verified zero horizontal overflow at 375px across every major view
+* Verified keyboard shortcuts (Ctrl/Cmd+Enter, Ctrl/Cmd+S) and focus-visible styling live
+* Verified drag-and-drop reordering is genuinely functional (frontend DOM + backend persistence)
+* Static unused-import scan (0 found across 79 files) and American-English spelling scan (0 issues)
+* Re-verified README accuracy against current seed.js and hackerrank.yml
+* Build + Prettier check clean; committed (aa3f380) and pushed to the private backup repo
+
+Context:
+tool=GitHub Copilot CLI
+branch=main
+repo_root=/Users/vishwateja/Downloads/Build your own Postman 
+worktree=main
+parent_agent=none
